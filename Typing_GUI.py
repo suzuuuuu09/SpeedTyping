@@ -1,8 +1,16 @@
 import PySimpleGUI as sg
+import random
 
-layout = 0
+layout = layout = [[sg.Text(key="-TEXT-")], [sg.Button("OK")]]
 
-window = sg.window("hogehoge", layout, size=(760, 360))
+window = sg.Window("hogehoge", layout, size=(1920, 1080))
 
-with event
+while True:
+    event, values = window.read()
+    if event == sg.WIN_CLOSED or event == "OK":
+        f = open("target1900.txt", "r")
+        l = f.readlines()
+        s = random.sample(1, 20)
+        window["-TEXT-"].update(s)
 
+window.close()
