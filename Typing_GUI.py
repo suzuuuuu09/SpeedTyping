@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
-import random
+import random, keyboard, pygame
+import tkinter as tk
 
 layout = layout = [[sg.Text(key="-TEXT-")], [sg.Button("OK")]]
 
