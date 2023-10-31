@@ -1,17 +1,19 @@
 import PySimpleGUI as sg
-import random, keyboard, pygame
 import tkinter as tk
+import Typing_Game
 
-layout = layout = [[sg.Text(key="-TEXT-")], [sg.Button("OK")]]
+sg.theme('SystemDefault')
 
-window = sg.Window("hogehoge", layout, size=(1920, 1080))
+canvas = sg.Canvas(size=(1280,720))
+layout = [[canvas]]
+
+window = sg.Window('サンプル', layout, finalize=True)
+
+canvas.tk_canvas.create_text(640, 360, text="fuck", font=("HG丸ｺﾞｼｯｸM-PRO",46))
 
 while True:
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == "OK":
-        f = open("word.txt", "r")
-        l = f.readlines()
-        s = random.sample(1, 20)
-        window["-TEXT-"].update(s)
+    if event == sg.WIN_CLOSED:
+        break
 
 window.close()
