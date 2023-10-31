@@ -15,10 +15,12 @@ layout = [[canvas]]
 window = sg.Window('サンプル', layout, finalize=True)
 
 canvas.tk_canvas.create_text(640, 360, text=myline, font=("HG丸ｺﾞｼｯｸM-PRO",46))
-keyboard.write('The quick brown fox jumps over the lazy dog.')
+
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
-        break
+        for x in myline:
+            if keyboard.read_read() == x:
+                print(x)
 
 window.close()
