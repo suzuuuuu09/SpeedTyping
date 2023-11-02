@@ -1,26 +1,36 @@
-import PySimpleGUI as sg
 import tkinter as tk
-import random, keyboard, pygame, pyautogui
+import random, keyboard, pygame, pyautogui, time
 
 #word.txtからランダム抽出
-lines = open('word.txt').read().splitlines()
-myline =random.choice(lines)
+myline = random.choice(open('word.txt').read().splitlines())
 
-#GUIのテーマ
-sg.theme('SystemDefault')
+def TypingGame():
+    label.config(text=myline)
 
-canvas = sg.Canvas(size=(1280,720))
-layout = [[canvas]]
+#アプリ終了
+def quit():
+    root.quit()
+    root.destroy()
 
-window = sg.Window('サンプル', layout, finalize=True)
+root = tk.Tk()
+label = tk.Label(
+    root,
+    width = 20,
+    font = ("HG丸ｺﾞｼｯｸM-PRO",46)
+)
 
-canvas.tk_canvas.create_text(640, 360, text=myline, font=("HG丸ｺﾞｼｯｸM-PRO",46))
+label.pack(padx=10, pady=10)
 
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED:
-        for x in myline:
-            if keyboard.read_read() == x:
-                print(x)
+button = tk.Button(
+    root,
+    text='a',
+    command=TypingGame
+)
+button.pack(padx=10, pady=10)
 
-window.close()
+#ウィンドウサイズ固定
+root.geometry("1280x720")
+#タイトル名
+root.title("a")
+
+root.mainloop()
