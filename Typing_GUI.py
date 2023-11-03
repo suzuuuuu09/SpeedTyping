@@ -61,6 +61,5 @@ button_label = tk.StringVar()
 button_label.set(10)
 tk.Button(root, textvariable=button_label, command=close).pack()
 button_countdown(10, button_label)
-
 root.mainloop()
 '''
