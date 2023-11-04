@@ -1,65 +1,83 @@
 import tkinter as tk
-import random, keyboard, pyautogui, time, pyaudio, sys, wave
+import threading as th
+import winsound, random, time
 
+#word.txtの読み込み
+with open("word.txt", "r") as f:
+    words = f.read().splitlines()
+original_words = words.copy()
 
-def TypingGame():
-    label.config(text=random.choice(open('word.txt').read().splitlines()))
+score = 0
+time_limit = 60
+start_time = None
+game_ended = False
 
+def start_game():
+    global score, start_time, game_ended
+    score = 0
+    start_time = time.time()
+    next_word()
+    start_button["state"] = "disabled"
+    entry["state"] = "normal"
+    countdown()
+    game_ended = False
 
-#開始時のカウントダウン
-def StartCount():
-    count = 100
-    if count > 0:
-        for i in range(count):
-            start_ct.set(count)
-            count -= 1
-            time.sleep(1)
+def next_word():
+    if len(words) > 0:
+        current_word = random.choice(words)
+        label.config(text=current_word)
+        words.remove(current_word)
+    else:
+        end_game()
 
+def end_game():
+    global score, game_ended
+    label.config(text=f"ゲーム終了 スコア: {score}")
+    entry.delete(0, tk.END)
+    start_button["state"] = "normal"
+    entry["state"] = "disabled"
+    game_ended = True
 
-#アプリ終了
-def quit():
-    root.quit()
-    root.destroy()
+def check_word(event):
+    global score
+    if game_ended:
+        return
+    user_input = entry.get()
+    if user_input == label.cget("text"):
+        score += 1
+        scoreL.config(text="スコア: " + str(score))
+    entry.delete(0, tk.END)
+    next_word()
 
-root = tk.Tk()
-
-
-
-#開始時カウントダウン
-start_ct = tk.StringVar(root)
-start_ctL = tk.Label(root, textvariable = start_ct, width = 20, font = ("HG丸ｺﾞｼｯｸM-PRO", 46))
-start_ctL.pack(padx = 50, pady = 80)
-
-
-label = tk.Label(root, width = 20, font = ("HG丸ｺﾞｼｯｸM-PRO", 46))
-label.pack(padx = 10, pady = 10)
-button = tk.Button(root, text = 'a', command = StartCount)
-button.pack(padx = 10, pady = 10)
+def countdown():
+    global time_limit
+    if start_time is not None:
+        elapsed_time = time.time() - start_time
+        remaining_time = max(time_limit - elapsed_time, 0)
+        timerL.config(text=f"残り時間: {int(remaining_time)} 秒")
+        if elapsed_time >= time_limit:
+            end_game()
+            entry.unbind("<Return>")
+        else:
+            root.after(1000, countdown)
 
 
 #ウィンドウ情報
-root.geometry("1280x720")
-root.title("a")
-
-root.mainloop()
-
-'''
-def button_countdown(i, label):
-    if i > 0:
-        i -= 1
-        label.set(i)
-        root.after(1000, lambda: button_countdown(i, label))
-    else:
-        close()
-
-def close():
-    root.destroy()
-
 root = tk.Tk()
+root.title("PyTyping")
 
-button_label = tk.StringVar()
-button_label.set(10)
-tk.Button(root, textvariable=button_label, command=close).pack()
-button_countdown(10, button_label)
+label = tk.Label(root, font=("Helvetica", 48))
+entry = tk.Entry(root, font=("Helvetica", 24), state="disabled")
+scoreL = tk.Label(root, text="スコア: 0", font=("Helvetica", 18))
+start_button = tk.Button(root, text="スタート", command=start_game)
+timerL = tk.Label(root, text=f"残り時間: {time_limit} 秒", font=("Helvetica", 18))
+
+label.pack()
+entry.pack()
+scoreL.pack()
+start_button.pack()
+timerL.pack()
+
+entry.bind("<Return>", check_word)
+
 root.mainloop()
-'''
