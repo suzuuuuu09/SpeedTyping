@@ -1,6 +1,8 @@
 import tkinter as tk
 import threading as th
-import winsound, random, time
+import winsound, random, time, math
+from fractions import Fraction
+
 
 #word.txtの読み込み
 with open("word.txt", "r") as f:
@@ -11,6 +13,12 @@ score = 0
 time_limit = 60
 start_time = None
 game_ended = False
+
+#windowのサイズと開始位置
+def display_pos():
+    width_dis = root.winfo_screenwidth()
+    height_dis = root.winfo_screenheight()
+    return str(width_dis // 2) + "x" + str(height_dis // 2) + "+" + str(width_dis // 4) + "+" + str(height_dis // 4)
 
 def start_game():
     global score, start_time, game_ended
@@ -65,6 +73,7 @@ def countdown():
 #ウィンドウ情報
 root = tk.Tk()
 root.title("PyTyping")
+root.geometry(display_pos())
 
 label = tk.Label(root, font=("Helvetica", 48))
 entry = tk.Entry(root, font=("Helvetica", 24), state="disabled")
