@@ -18,7 +18,7 @@ game_ended = False
 def display_pos():
     width_dis = root.winfo_screenwidth()
     height_dis = root.winfo_screenheight()
-    return str(width_dis // 2) + "x" + str(height_dis // 2) + "+" + str(width_dis // 4) + "+" + str(height_dis // 4)
+    return str(math.floor(width_dis / 2.5)) + "x" + str(math.floor(height_dis / 2.5)) + "+" + str(math.floor(width_dis // 3.3)) + "+" + str(math.floor(height_dis // 3.3))
 
 def start_game():
     global score, start_time, game_ended
