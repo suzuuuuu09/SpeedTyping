@@ -1,7 +1,6 @@
 import tkinter as tk
 import threading as th
-import winsound, random, time, math
-
+import winsound, random, time, math, pyautogui
 
 #word.txtの読み込み
 with open("word.txt", "r") as f:
@@ -74,11 +73,12 @@ root = tk.Tk()
 root.title("PyTyping")
 root.geometry(display_pos())
 
+#UI
 label = tk.Label(root, font=("Helvetica", 48))
-entry = tk.Entry(root, font=("Helvetica", 24), state="disabled")
+entry = tk.Entry(root, font=("Helvetica", 24), state = "disabled", justify = "center")
 scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
-start_button = tk.Button(root, text="Start!", command=start_game)
-timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
+start_button = tk.Button(root, text="Start!", command = start_game)
+timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
 timerL.place(relx = 0.05, rely = 0)
 scoreL.place(relx = 0.85, rely = 0)
