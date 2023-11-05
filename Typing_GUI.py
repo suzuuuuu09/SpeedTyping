@@ -1,13 +1,11 @@
 import tkinter as tk
 import threading as th
 import winsound, random, time, math
-from fractions import Fraction
 
 
 #word.txtの読み込み
 with open("word.txt", "r") as f:
     words = f.read().splitlines()
-original_words = words.copy()
 
 score = 0
 time_limit = 60
@@ -16,9 +14,10 @@ game_ended = False
 
 #windowのサイズと開始位置
 def display_pos():
-    width_dis = root.winfo_screenwidth()
-    height_dis = root.winfo_screenheight()
-    return str(math.floor(width_dis / 2.5)) + "x" + str(math.floor(height_dis / 2.5)) + "+" + str(math.floor(width_dis // 3.3)) + "+" + str(math.floor(height_dis // 3.3))
+    global w_dis, h_dis, w_win, h_win
+    w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
+    w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
+    return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
 def start_game():
     global score, start_time, game_ended
@@ -40,7 +39,7 @@ def next_word():
 
 def end_game():
     global score, game_ended
-    label.config(text=f"ゲーム終了 スコア: {score}")
+    label.config(text=f"ゲーム終了\nScore: {score}")
     entry.delete(0, tk.END)
     start_button["state"] = "normal"
     entry["state"] = "disabled"
@@ -53,7 +52,7 @@ def check_word(event):
     user_input = entry.get()
     if user_input == label.cget("text"):
         score += 1
-        scoreL.config(text="スコア: " + str(score))
+        scoreL.config(text="Score: " + str(score))
     entry.delete(0, tk.END)
     next_word()
 
@@ -62,7 +61,7 @@ def countdown():
     if start_time is not None:
         elapsed_time = time.time() - start_time
         remaining_time = max(time_limit - elapsed_time, 0)
-        timerL.config(text=f"残り時間: {int(remaining_time)} 秒")
+        timerL.config(text=f"Time: {int(remaining_time)} ")
         if elapsed_time >= time_limit:
             end_game()
             entry.unbind("<Return>")
@@ -77,15 +76,15 @@ root.geometry(display_pos())
 
 label = tk.Label(root, font=("Helvetica", 48))
 entry = tk.Entry(root, font=("Helvetica", 24), state="disabled")
-scoreL = tk.Label(root, text="スコア: 0", font=("Helvetica", 18))
-start_button = tk.Button(root, text="スタート", command=start_game)
-timerL = tk.Label(root, text=f"残り時間: {time_limit} 秒", font=("Helvetica", 18))
+scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
+start_button = tk.Button(root, text="Start!", command=start_game)
+timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
+timerL.place(relx = 0.05, rely = 0)
+scoreL.place(relx = 0.85, rely = 0)
 label.pack()
 entry.pack()
-scoreL.pack()
 start_button.pack()
-timerL.pack()
 
 entry.bind("<Return>", check_word)
 
