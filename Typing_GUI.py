@@ -22,6 +22,7 @@ def start_game():
     global score, start_time, game_ended
     score = 0
     start_time = time.time()
+    start_button.pack_forget()
     next_word()
     start_button["state"] = "disabled"
     entry["state"] = "normal"
