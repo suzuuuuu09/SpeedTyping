@@ -9,6 +9,7 @@ with open("word.txt", "r") as f:
 score = 0
 time_limit = 60
 start_time = None
+ct = None
 game_ended = False
 
 #windowのサイズと開始位置
@@ -17,6 +18,20 @@ def display_pos():
     w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
     w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
+
+def count_down(sec):
+    global ct
+    count_down_label.config(text=str(sec))
+    if sec > 0:
+        ct = root.after(1000, count_down, sec - 1)
+    else:
+        if ct:
+            root.after_cancel(ct)
+        count_down_label.config(text="GO!")
+        start_button["state"] = "normal"
+        entry.focus_set()
+        start_time = time.time()
+        next_word()
 
 def start_game():
     global score, start_time, game_ended
