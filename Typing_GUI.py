@@ -20,29 +20,27 @@ def display_pos():
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
 def start_ct(sec):
-    global ct
+    global ct, start_time
     label.config(text=str(sec))
     if sec > 0:
-        ct = root.after(1000, count_down, sec - 1)
+        ct = root.after(1000, start_ct, sec - 1)
     else:
         if ct:
             root.after_cancel(ct)
-        count_down_label.config(text="GO!")
+        label.config(text="GO!")
         start_button["state"] = "normal"
         entry.focus_set()
         start_time = time.time()
         next_word()
+        countdown()
 
 def start_game():
-    global score, start_time, game_ended
+    global score, game_ended
     score = 0
-    start_time = time.time()
     start_ct(3)
     start_button.pack_forget()
-    next_word()
     start_button["state"] = "disabled"
     entry["state"] = "normal"
-    countdown()
     game_ended = False
 
 def next_word():
