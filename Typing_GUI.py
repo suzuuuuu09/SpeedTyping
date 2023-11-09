@@ -105,13 +105,11 @@ scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
 start_button = tk.Button(root, text="Start!", command = start_game)
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
-timerL.place(relx = 0.05, rely = 0)
-scoreL.place(relx = 0.8, rely = 0)
+timerL.place(x = w // 10, y = h // 12, anchor = "center")
+scoreL.place(x = w // 1.1, y = h // 12, anchor = "center")
 label.place(x = w // 2, y = h // 3, anchor = "center")
 entry.place(x = w // 2, y = h // 2, anchor = "center")
 start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
-
-print(w, h)
 
 entry.bind("<Return>", check_word)
 
