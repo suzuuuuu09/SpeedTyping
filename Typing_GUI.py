@@ -29,6 +29,7 @@ def start_ct(sec):
             root.after_cancel(ct)
         label.config(text="GO!")
         start_button["state"] = "normal"
+        entry["state"] = "normal"
         entry.focus_set()
         start_time = time.time()
         next_word()
@@ -40,7 +41,6 @@ def start_game():
     start_ct(3)
     start_button.pack_forget()
     start_button["state"] = "disabled"
-    entry["state"] = "normal"
     game_ended = False
 
 def next_word():
@@ -96,7 +96,7 @@ start_button = tk.Button(root, text="Start!", command = start_game)
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
 timerL.place(relx = 0.05, rely = 0)
-scoreL.place(relx = 0.85, rely = 0)
+scoreL.place(relx = 0.8, rely = 0)
 label.pack()
 entry.pack()
 start_button.pack()
