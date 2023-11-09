@@ -1,6 +1,6 @@
 import tkinter as tk
 import threading as th
-import winsound, random, time, math, pyautogui
+import winsound, random, time, math, keyboard
 
 #word.txtの読み込み
 with open("word.txt", "r") as f:
@@ -14,10 +14,17 @@ game_ended = False
 
 #windowのサイズと開始位置
 def display_pos():
-    global w_dis, h_dis, w_win, h_win
+    global w_dis, h_dis, w_win_set, h_win_set
     w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
-    w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
-    return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
+    w_win_set, h_win_set = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
+    return  str(w_win_set) + "x" + str(h_win_set) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
+
+def reset_pos():
+    timerL.place_forget()
+    scoreL.place_forget()
+    label.place_forget()
+    entry.place_forget()
+    start_button.place_forget()
 
 def start_ct(sec):
     global ct, start_time
@@ -39,7 +46,7 @@ def start_game():
     global score, game_ended
     score = 0
     start_ct(3)
-    start_button.pack_forget()
+    start_button.place_forget()
     start_button["state"] = "disabled"
     game_ended = False
 
@@ -53,7 +60,7 @@ def next_word():
 
 def end_game():
     global score, game_ended
-    label.config(text=f"ゲーム終了\nScore: {score}")
+    label.config(text="ゲーム終了\nScore: " + str(score))
     entry.delete(0, tk.END)
     start_button["state"] = "normal"
     entry["state"] = "disabled"
@@ -85,8 +92,11 @@ def countdown():
 
 #ウィンドウ情報
 root = tk.Tk()
-root.title("PyTyping")
 root.geometry(display_pos())
+root.update_idletasks()
+root.resizable(0,0)
+w, h = root.winfo_width(), root.winfo_height()
+root.title("PyTyping")
 
 #UI
 label = tk.Label(root, font=("Helvetica", 48))
@@ -97,9 +107,11 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
 timerL.place(relx = 0.05, rely = 0)
 scoreL.place(relx = 0.8, rely = 0)
-label.pack()
-entry.pack()
-start_button.pack()
+label.place(x = w // 2, y = h // 3, anchor = "center")
+entry.place(x = w // 2, y = h // 2, anchor = "center")
+start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
+
+print(w, h)
 
 entry.bind("<Return>", check_word)
 
