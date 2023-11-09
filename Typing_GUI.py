@@ -14,10 +14,10 @@ game_ended = False
 
 #windowのサイズと開始位置
 def display_pos():
-    global w_dis, h_dis, w_win_set, h_win_set
+    global w_dis, h_dis, w_win, h_win
     w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
-    w_win_set, h_win_set = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
-    return  str(w_win_set) + "x" + str(h_win_set) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
+    w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
+    return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
 def reset_pos():
     timerL.place_forget()
