@@ -20,47 +20,54 @@ def display_pos():
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
 def reset_pos():
-    timerL.place_forget()
-    scoreL.place_forget()
-    label.place_forget()
+    wordL.place_forget()
+    countL.place_forget()
     entry.place_forget()
+    scoreL.place_forget()
     start_button.place_forget()
+    timerL.place_forget()
 
 def start_ct(sec):
     global ct, start_time
-    label.config(text=str(sec))
+    reset_pos()
+    countL.place(x = w // 2, y = h // 2, anchor = "center")
+    countL.config(text =str(sec))
     if sec > 0:
         ct = root.after(1000, start_ct, sec - 1)
     else:
         if ct:
             root.after_cancel(ct)
-        label.config(text="GO!")
+        countL.config(text="GO!")
         start_button["state"] = "normal"
         entry["state"] = "normal"
         entry.focus_set()
         start_time = time.time()
         next_word()
         countdown()
+        reset_pos()
+        timerL.place(x = w // 10, y = h // 12, anchor = "center")
+        scoreL.place(x = w // 1.1, y = h // 12, anchor = "center")
+        wordL.place(x = w // 2, y = h // 3, anchor = "center")
+        entry.place(x = w // 2, y = h // 2, anchor = "center")
 
 def start_game():
     global score, game_ended
     score = 0
     start_ct(3)
-    start_button.place_forget()
     start_button["state"] = "disabled"
     game_ended = False
 
 def next_word():
     if len(words) > 0:
         current_word = random.choice(words)
-        label.config(text=current_word)
+        wordL.config(text=current_word)
         words.remove(current_word)
     else:
         end_game()
 
 def end_game():
     global score, game_ended
-    label.config(text="ゲーム終了\nScore: " + str(score))
+    wordL.config(text="ゲーム終了\nScore: " + str(score))
     entry.delete(0, tk.END)
     start_button["state"] = "normal"
     entry["state"] = "disabled"
@@ -71,7 +78,7 @@ def check_word(event):
     if game_ended:
         return
     user_input = entry.get()
-    if user_input == label.cget("text"):
+    if user_input == wordL.cget("text"):
         score += 1
         scoreL.config(text="Score: " + str(score))
     entry.delete(0, tk.END)
@@ -99,16 +106,13 @@ w, h = root.winfo_width(), root.winfo_height()
 root.title("PyTyping")
 
 #UI
-label = tk.Label(root, font=("Helvetica", 48))
+wordL = tk.Label(root, font=("Helvetica", 48))
+countL = tk.Label(root, font=("Helvetica", 54))
 entry = tk.Entry(root, font=("Helvetica", 24), state = "disabled", justify = "center")
 scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
 start_button = tk.Button(root, text="Start!", command = start_game)
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
-timerL.place(x = w // 10, y = h // 12, anchor = "center")
-scoreL.place(x = w // 1.1, y = h // 12, anchor = "center")
-label.place(x = w // 2, y = h // 3, anchor = "center")
-entry.place(x = w // 2, y = h // 2, anchor = "center")
 start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
 
 entry.bind("<Return>", check_word)
