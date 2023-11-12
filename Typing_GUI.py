@@ -1,16 +1,21 @@
 import tkinter as tk
 import threading as th
 import winsound, random, time, math, keyboard
+from concurrent.futures import ThreadPoolExecutor
+from PIL import Image, ImageDraw, ImageFont
+
 
 #word.txtの読み込み
 with open("word.txt", "r") as f:
     words = f.read().splitlines()
+
 
 score = 0
 time_limit = 60
 start_time = None
 ct = None
 game_ended = False
+
 
 #windowのサイズと開始位置
 def display_pos():
@@ -19,6 +24,8 @@ def display_pos():
     w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
+
+#オブジェクトリセット
 def reset_pos():
     wordL.place_forget()
     countL.place_forget()
@@ -27,6 +34,24 @@ def reset_pos():
     start_button.place_forget()
     timerL.place_forget()
 
+
+#正解効果音
+def hit_se():
+    winsound.PlaySound("sounds/hit.wav", winsound.SND_FILENAME)
+
+
+#不正解効果音
+def miss_se():
+    winsound.PlaySound("sounds/miss.wav", winsound.SND_FILENAME)
+
+
+def title():
+    reset_pos()
+    start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
+    titleL.place(x = w // 2, y = h // 2, anchor = "center")
+
+
+#ゲーム開始時カウントダウン
 def start_ct(sec):
     global ct, start_time
     reset_pos()
@@ -50,12 +75,14 @@ def start_ct(sec):
         wordL.place(x = w // 2, y = h // 3, anchor = "center")
         entry.place(x = w // 2, y = h // 2, anchor = "center")
 
+
 def start_game():
     global score, game_ended
     score = 0
     start_ct(3)
     start_button["state"] = "disabled"
     game_ended = False
+
 
 def next_word():
     if len(words) > 0:
@@ -65,6 +92,7 @@ def next_word():
     else:
         end_game()
 
+
 def end_game():
     global score, game_ended
     wordL.config(text="ゲーム終了\nScore: " + str(score))
@@ -73,6 +101,7 @@ def end_game():
     entry["state"] = "disabled"
     game_ended = True
 
+
 def check_word(event):
     global score
     if game_ended:
@@ -80,9 +109,14 @@ def check_word(event):
     user_input = entry.get()
     if user_input == wordL.cget("text"):
         score += 1
-        scoreL.config(text="Score: " + str(score))
+        next_word()
+        hit_se()
+    else:
+        next_word()
+        miss_se()
+    scoreL.config(text="Score: " + str(score))
     entry.delete(0, tk.END)
-    next_word()
+    
 
 def countdown():
     global time_limit
@@ -103,17 +137,19 @@ root.geometry(display_pos())
 root.update_idletasks()
 root.resizable(0,0)
 w, h = root.winfo_width(), root.winfo_height()
-root.title("PyTyping")
+root.title("SpeedTyping")
+
 
 #UI
-wordL = tk.Label(root, font=("Helvetica", 48))
-countL = tk.Label(root, font=("Helvetica", 54))
-entry = tk.Entry(root, font=("Helvetica", 24), state = "disabled", justify = "center")
-scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
-start_button = tk.Button(root, text="Start!", command = start_game)
+titleL = tk.Label(root, text = "SpeedTyping", font = ("fonts/smb.ttf", 80))
+wordL = tk.Label(root, font = ("Helvetica", 48))
+countL = tk.Label(root, font = ("Helvetica", 54))
+entry = tk.Entry(root, font = ("Helvetica", 24), state = "disabled", justify = "center")
+scoreL = tk.Label(root, text = "Score: 0", font = ("Helvetica", 18))
+start_button = tk.Button(root, text = "Start!", command = start_game)
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
-start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
+title()
 
 entry.bind("<Return>", check_word)
 
