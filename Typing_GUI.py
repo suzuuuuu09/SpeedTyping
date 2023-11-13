@@ -3,6 +3,7 @@ import threading as th
 import winsound, random, time, math, keyboard
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageDraw, ImageFont
+from tkinter import ttk
 
 
 #word.txtの読み込み
@@ -21,17 +22,21 @@ game_ended = False
 def display_pos():
     global w_dis, h_dis, w_win, h_win
     w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
+    if w_dis > 1920 or h_dis > 1080:
+        w_dis, h_dis = 1920, 1080
     w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
 
 #オブジェクトリセット
 def reset_pos():
+    titleL.place_forget()
     wordL.place_forget()
     countL.place_forget()
     entry.place_forget()
     scoreL.place_forget()
-    start_button.place_forget()
+    startB.place_forget()
+    settingB.place_forget()
     timerL.place_forget()
 
 
@@ -47,8 +52,9 @@ def miss_se():
 
 def title():
     reset_pos()
-    start_button.place(x = w // 2, y = h // 1.5, anchor = "center")
-    titleL.place(x = w // 2, y = h // 2, anchor = "center")
+    startB.place(x = w // 3, y = h // 1.5, anchor = "center")
+    settingB.place(x = w // 1.5, y = h // 1.5, anchor = "center")
+    titleL.place(x = w // 2, y = h // 3.5, anchor = "center")
 
 
 #ゲーム開始時カウントダウン
@@ -63,7 +69,7 @@ def start_ct(sec):
         if ct:
             root.after_cancel(ct)
         countL.config(text="GO!")
-        start_button["state"] = "normal"
+        startB["state"] = "normal"
         entry["state"] = "normal"
         entry.focus_set()
         start_time = time.time()
@@ -80,7 +86,7 @@ def start_game():
     global score, game_ended
     score = 0
     start_ct(3)
-    start_button["state"] = "disabled"
+    startB["state"] = "disabled"
     game_ended = False
 
 
@@ -97,7 +103,7 @@ def end_game():
     global score, game_ended
     wordL.config(text="ゲーム終了\nScore: " + str(score))
     entry.delete(0, tk.END)
-    start_button["state"] = "normal"
+    startB["state"] = "normal"
     entry["state"] = "disabled"
     game_ended = True
 
@@ -140,13 +146,21 @@ w, h = root.winfo_width(), root.winfo_height()
 root.title("SpeedTyping")
 
 
+#ttk.styleの設定
+style = ttk.Style()
+style.theme_use("clam")
+style.configure("title.TButton", font = ("Arial", 20))
+
+
 #UI
+startB = ttk.Button(root, text = "START", style="title.TButton", padding = [10], command = start_game)
+settingB = ttk.Button(root, text = "SETTING", style="title.TButton", padding = [10])
 titleL = tk.Label(root, text = "SpeedTyping", font = ("fonts/smb.ttf", 80))
+
 wordL = tk.Label(root, font = ("Helvetica", 48))
 countL = tk.Label(root, font = ("Helvetica", 54))
 entry = tk.Entry(root, font = ("Helvetica", 24), state = "disabled", justify = "center")
 scoreL = tk.Label(root, text = "Score: 0", font = ("Helvetica", 18))
-start_button = tk.Button(root, text = "Start!", command = start_game)
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
 
 title()
