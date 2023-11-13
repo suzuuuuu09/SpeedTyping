@@ -3,6 +3,7 @@ import threading as th
 import winsound, random, time, math, keyboard
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageDraw, ImageFont
+from tkinter import *
 from tkinter import ttk
 
 
@@ -33,35 +34,47 @@ def reset_pos():
     titleL.place_forget()
     wordL.place_forget()
     countL.place_forget()
-    entry.place_forget()
+    wordE.place_forget()
     scoreL.place_forget()
     startB.place_forget()
     settingB.place_forget()
     timerL.place_forget()
+    seCB.pack_forget()
+    backB.pack_forget()
 
 
 #正解効果音
 def hit_se():
-    winsound.PlaySound("sounds/hit.wav", winsound.SND_FILENAME)
+    if se.get():
+       winsound.PlaySound("sounds/hit.wav", winsound.SND_FILENAME)
 
 
 #不正解効果音
 def miss_se():
-    winsound.PlaySound("sounds/miss.wav", winsound.SND_FILENAME)
+    if se.get():
+        winsound.PlaySound("sounds/miss.wav", winsound.SND_FILENAME)
 
 
+#タイトル画面
 def title():
     reset_pos()
-    startB.place(x = w // 3, y = h // 1.5, anchor = "center")
-    settingB.place(x = w // 1.5, y = h // 1.5, anchor = "center")
-    titleL.place(x = w // 2, y = h // 3.5, anchor = "center")
+    startB.place(x=w // 3, y=h // 1.5, anchor = "center")
+    settingB.place(x=w // 1.5, y=h // 1.5, anchor = "center")
+    titleL.place(x=w // 2, y=h // 3.5, anchor = "center")
+
+
+#設定画面
+def setting():
+    reset_pos()
+    seCB.pack(anchor="w")
+    backB.pack(side="bottom", anchor="w")
 
 
 #ゲーム開始時カウントダウン
 def start_ct(sec):
     global ct, start_time
     reset_pos()
-    countL.place(x = w // 2, y = h // 2, anchor = "center")
+    countL.place(x=w // 2, y=h // 2, anchor = "center")
     countL.config(text =str(sec))
     if sec > 0:
         ct = root.after(1000, start_ct, sec - 1)
@@ -70,21 +83,22 @@ def start_ct(sec):
             root.after_cancel(ct)
         countL.config(text="GO!")
         startB["state"] = "normal"
-        entry["state"] = "normal"
-        entry.focus_set()
+        wordE["state"] = "normal"
+        wordE.focus_set()
         start_time = time.time()
         next_word()
         countdown()
         reset_pos()
-        timerL.place(x = w // 10, y = h // 12, anchor = "center")
-        scoreL.place(x = w // 1.1, y = h // 12, anchor = "center")
-        wordL.place(x = w // 2, y = h // 3, anchor = "center")
-        entry.place(x = w // 2, y = h // 2, anchor = "center")
+        timerL.place(x= w // 10, y= h // 12, anchor="center")
+        scoreL.place(x= w // 1.1, y= h // 12, anchor="center")
+        wordL.place(x= w // 2, y= h // 3, anchor="center")
+        wordE.place(x= w // 2, y= h // 2, anchor="center")
 
 
 def start_game():
     global score, game_ended
     score = 0
+    wordE.bind("<Return>", check_word)
     start_ct(3)
     startB["state"] = "disabled"
     game_ended = False
@@ -102,9 +116,9 @@ def next_word():
 def end_game():
     global score, game_ended
     wordL.config(text="ゲーム終了\nScore: " + str(score))
-    entry.delete(0, tk.END)
+    wordE.delete(0, tk.END)
     startB["state"] = "normal"
-    entry["state"] = "disabled"
+    wordE["state"] = "disabled"
     game_ended = True
 
 
@@ -112,7 +126,7 @@ def check_word(event):
     global score
     if game_ended:
         return
-    user_input = entry.get()
+    user_input = wordE.get()
     if user_input == wordL.cget("text"):
         score += 1
         next_word()
@@ -121,7 +135,7 @@ def check_word(event):
         next_word()
         miss_se()
     scoreL.config(text="Score: " + str(score))
-    entry.delete(0, tk.END)
+    wordE.delete(0, tk.END)
     
 
 def countdown():
@@ -132,7 +146,7 @@ def countdown():
         timerL.config(text=f"Time: {int(remaining_time)} ")
         if elapsed_time >= time_limit:
             end_game()
-            entry.unbind("<Return>")
+            wordE.unbind("<Return>")
         else:
             root.after(1000, countdown)
 
@@ -146,25 +160,29 @@ w, h = root.winfo_width(), root.winfo_height()
 root.title("SpeedTyping")
 
 
-#ttk.styleの設定
+#styleの設定
 style = ttk.Style()
-style.theme_use("clam")
-style.configure("title.TButton", font = ("Arial", 20))
+style.configure("t.TButton", font=("Segoe UI Emoji", 20))
+style.configure("setting.TCheckbutton", font=("Segoe UI Emoji", 20))
 
 
 #UI
-startB = ttk.Button(root, text = "START", style="title.TButton", padding = [10], command = start_game)
-settingB = ttk.Button(root, text = "SETTING", style="title.TButton", padding = [10])
-titleL = tk.Label(root, text = "SpeedTyping", font = ("fonts/smb.ttf", 80))
+startB = ttk.Button(root, text="START", style="t.TButton", padding=[10], command=start_game)
+settingB = ttk.Button(root, text="SETTING", style="t.TButton", padding=[10], command=setting)
+titleL = tk.Label(root, text="SpeedTyping", font=("fonts/smb.ttf", 80))
 
-wordL = tk.Label(root, font = ("Helvetica", 48))
-countL = tk.Label(root, font = ("Helvetica", 54))
-entry = tk.Entry(root, font = ("Helvetica", 24), state = "disabled", justify = "center")
-scoreL = tk.Label(root, text = "Score: 0", font = ("Helvetica", 18))
-timerL = tk.Label(root, text=f"Time: {time_limit} ", font = ("Helvetica", 18))
+
+se = BooleanVar(root)
+seCB = ttk.Checkbutton(root, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se)
+backB = ttk.Button(root, text="<Back", style="t.TButton", padding=[10], command=title)
+
+
+wordL = tk.Label(root, font=("Helvetica", 48))
+countL = tk.Label(root, font=("Helvetica", 54))
+wordE = ttk.Entry(root, font=("Helvetica", 24), state="disabled", justify="center")
+scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
+timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 title()
-
-entry.bind("<Return>", check_word)
 
 root.mainloop()
