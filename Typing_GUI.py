@@ -23,8 +23,6 @@ game_ended = False
 def display_pos():
     global w_dis, h_dis, w_win, h_win
     w_dis, h_dis = root.winfo_screenwidth(), root.winfo_screenheight()
-    if w_dis > 1920 or h_dis > 1080:
-        w_dis, h_dis = 1920, 1080
     w_win, h_win = math.floor(w_dis / 2.5), math.floor(h_dis / 2.5)
     return  str(w_win) + "x" + str(h_win) + "+" + str(math.floor(w_dis // 3.3)) + "+" + str(math.floor(h_dis // 3.3))
 
