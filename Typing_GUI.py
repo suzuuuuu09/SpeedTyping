@@ -1,10 +1,9 @@
 import tkinter as tk
-import threading as th
-import winsound, random, time, math, keyboard
-from concurrent.futures import ThreadPoolExecutor
-from PIL import Image, ImageDraw, ImageFont
+import sys, random, time, math, keyboard
 from tkinter import *
 from tkinter import ttk
+from pydub import AudioSegment
+from pydub.playback import play
 
 
 #word.txtの読み込み
@@ -15,6 +14,7 @@ with open("word.txt", "r") as f:
 score = 0
 time_limit = 60
 enter_ct = 0
+volume_percent = 70
 start_time = None
 ct = None
 game_ended = False
@@ -44,15 +44,17 @@ def reset_pos():
 
 
 #正解効果音
-def hit_se():
+def play_hit_se():
     if se.get():
-       winsound.PlaySound("sounds/hit.wav", winsound.SND_FILENAME)
+        hit_se = AudioSegment.from_wav("sounds/hit.wav")
+        play(hit_se + (20 * math.log10(volume_percent / 100)))
 
 
 #不正解効果音
-def miss_se():
+def play_miss_se():
     if se.get():
-        winsound.PlaySound("sounds/miss.wav", winsound.SND_FILENAME)
+        miss_se = AudioSegment.from_wav("sounds/miss.wav")
+        play(miss_se + (20 * math.log10(volume_percent / 100)))
 
 
 #タイトル画面
@@ -135,11 +137,11 @@ def check_word(event):
         score += 1
         enter_ct += 1
         next_word()
-        hit_se()
+        play_hit_se()
     else:
         enter_ct += 1
         next_word()
-        miss_se()
+        play_miss_se()
     scoreL.config(text="Score: " + str(score))
     wordE.delete(0, tk.END)
     
@@ -192,6 +194,7 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 
 accuL = tk.Label(root, font=("Helvetica", 48))
+#voluS = ttk.Scale(root, variable=val,)
 contiB = ttk.Button(root, text="CONTINUE", style="t.TButton", padding=[10], command=start_game)
 titleB = ttk.Button(root, text="TITLE", style="t.TButton", padding=[10], command=title)
 
