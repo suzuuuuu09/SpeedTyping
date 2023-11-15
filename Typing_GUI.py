@@ -192,6 +192,8 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 
 accuL = tk.Label(root, font=("Helvetica", 48))
+contiB = ttk.Button(root, text="CONTINUE", style="t.TButton", padding=[10], command=start_game)
+titleB = ttk.Button(root, text="TITLE", style="t.TButton", padding=[10], command=title)
 
 
 title()
