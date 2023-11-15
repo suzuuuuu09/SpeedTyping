@@ -14,6 +14,7 @@ with open("word.txt", "r") as f:
 
 score = 0
 time_limit = 60
+enter_ct = 0
 start_time = None
 ct = None
 game_ended = False
@@ -39,6 +40,7 @@ def reset_pos():
     timerL.place_forget()
     seCB.pack_forget()
     backB.pack_forget()
+    accuL.place_forget()
 
 
 #正解効果音
@@ -56,9 +58,9 @@ def miss_se():
 #タイトル画面
 def title():
     reset_pos()
-    startB.place(x=w // 3, y=h // 1.5, anchor = "center")
-    settingB.place(x=w // 1.5, y=h // 1.5, anchor = "center")
-    titleL.place(x=w // 2, y=h // 3.5, anchor = "center")
+    startB.place(x=w // 3, y=h // 1.5, anchor="center")
+    settingB.place(x=w // 1.5, y=h // 1.5, anchor="center")
+    titleL.place(x=w // 2, y=h // 3.5, anchor="center")
 
 
 #設定画面
@@ -68,11 +70,16 @@ def setting():
     backB.pack(side="bottom", anchor="w")
 
 
+#結果画面
+def result():
+    reset_pos()
+
+
 #ゲーム開始時カウントダウン
 def start_ct(sec):
     global ct, start_time
     reset_pos()
-    countL.place(x=w // 2, y=h // 2, anchor = "center")
+    countL.place(x=w // 2, y=h // 2, anchor="center")
     countL.config(text =str(sec))
     if sec > 0:
         ct = root.after(1000, start_ct, sec - 1)
@@ -113,23 +120,24 @@ def next_word():
 
 def end_game():
     global score, game_ended
-    wordL.config(text="ゲーム終了\nScore: " + str(score))
-    wordE.delete(0, tk.END)
-    startB["state"] = "normal"
-    wordE["state"] = "disabled"
+    reset_pos()
+    accuL.pack()
+    accuL.config(text=str(round(score / enter_ct * 100, 1)) + "%")
     game_ended = True
-
+ 
 
 def check_word(event):
-    global score
+    global score, enter_ct
     if game_ended:
         return
     user_input = wordE.get()
     if user_input == wordL.cget("text"):
         score += 1
+        enter_ct += 1
         next_word()
         hit_se()
     else:
+        enter_ct += 1
         next_word()
         miss_se()
     scoreL.config(text="Score: " + str(score))
@@ -160,14 +168,15 @@ root.title("SpeedTyping")
 
 #styleの設定
 style = ttk.Style()
-style.configure("t.TButton", font=("Segoe UI Emoji", 20))
-style.configure("setting.TCheckbutton", font=("Segoe UI Emoji", 20))
+style.theme_use("clam")
+style.configure("t.TButton", font=("Helveticai", 20))
+style.configure("setting.TCheckbutton", font=("Helvetica", 20))
 
 
 #UI
 startB = ttk.Button(root, text="START", style="t.TButton", padding=[10], command=start_game)
 settingB = ttk.Button(root, text="SETTING", style="t.TButton", padding=[10], command=setting)
-titleL = tk.Label(root, text="SpeedTyping", font=("fonts/smb.ttf", 80))
+titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 
 se = BooleanVar(root)
@@ -180,6 +189,10 @@ countL = tk.Label(root, font=("Helvetica", 54))
 wordE = ttk.Entry(root, font=("Helvetica", 24), state="disabled", justify="center")
 scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
+
+
+accuL = tk.Label(root, font=("Helvetica", 48))
+
 
 title()
 
