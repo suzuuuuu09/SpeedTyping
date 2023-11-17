@@ -45,6 +45,7 @@ def reset_pos():
 
 #正解効果音
 def play_hit_se():
+    global volume_percent
     if se.get():
         hit_se = AudioSegment.from_wav("sounds/hit.wav")
         play(hit_se + (20 * math.log10(volume_percent / 100)))
@@ -52,6 +53,7 @@ def play_hit_se():
 
 #不正解効果音
 def play_miss_se():
+    global volume_percent
     if se.get():
         miss_se = AudioSegment.from_wav("sounds/miss.wav")
         play(miss_se + (20 * math.log10(volume_percent / 100)))
@@ -171,13 +173,13 @@ root.title("SpeedTyping")
 #styleの設定
 style = ttk.Style()
 style.theme_use("clam")
-style.configure("t.TButton", font=("Helveticai", 20))
+style.configure("title.TButton", font=("Helveticai", 20))
 style.configure("setting.TCheckbutton", font=("Helvetica", 20))
 
 
 #UI
-startB = ttk.Button(root, text="START", style="t.TButton", padding=[10], command=start_game)
-settingB = ttk.Button(root, text="SETTING", style="t.TButton", padding=[10], command=setting)
+startB = ttk.Button(root, text="START", style="title.TButton", padding=[10], command=start_game)
+settingB = ttk.Button(root, text="SETTING", style="title.TButton", padding=[10], command=setting)
 titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 
