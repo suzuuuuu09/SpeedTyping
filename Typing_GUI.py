@@ -12,10 +12,11 @@ with open("word.txt", "r") as f:
 
 
 score = 0
-time_limit = 1
+time_limit = 10
 volume_percent = 70
 enter_ct = 0
 cor_ct = 0
+conti_ct = 0
 start_time = None
 ct = None
 game_ended = False
@@ -71,6 +72,11 @@ def title():
     titleL.place(x=w // 2, y=h // 3.5, anchor="center")
 
 
+#モード選択画面
+def mode_select():
+    reset_pos()
+
+
 #設定画面
 def setting():
     reset_pos()
@@ -96,7 +102,7 @@ def result():
 
 #ゲーム開始時カウントダウン
 def start_ct(sec):
-    global ct, start_time
+    global ct, start_time, cur_word
     reset_pos()
     countL.place(x=w // 2, y=h // 2, anchor="center")
     countL.config(text =str(sec))
@@ -119,6 +125,7 @@ def start_ct(sec):
         wordE.place(x= w // 2, y= h // 2, anchor="center")
 
 
+#ゲーム開始時の初期化
 def start_game():
     global score, game_ended
     score = 0
@@ -130,7 +137,7 @@ def start_game():
 
 def next_word():
     if len(words) > 0:
-        current_word = random.choice(words)
+        current_word = random.choice([word for word in words if len(word) >= 1 and len(word) <= 2])
         wordL.config(text=current_word)
         words.remove(current_word)
     else:
@@ -138,7 +145,7 @@ def next_word():
  
 
 def check_word(event):
-    global score, enter_ct, cor_ct, cur_word
+    global score, enter_ct, cor_ct, cur_word, conti_ct
     if game_ended:
         return
     user_input = wordE.get()
@@ -147,9 +154,11 @@ def check_word(event):
         score += len(cur_word)
         cor_ct += 1
         enter_ct += 1
+        conti_ct += 1
         play_hit_se()
     else:
         enter_ct += 1
+        conti_ct = 0
         play_miss_se()
     next_word()
     scoreL.config(text="Score: " + str(score))
@@ -157,10 +166,12 @@ def check_word(event):
     
 
 def countdown():
-    global time_limit
+    global time_limit, conti_ct
     if start_time is not None:
         elapsed_time = time.time() - start_time
         remaining_time = max(time_limit - elapsed_time, 0)
+        if conti_ct % 3 == 0:
+            remaining_time += conti_ct / 3
         timerL.config(text=f"Time: {int(remaining_time)} ")
         if elapsed_time >= time_limit:
             result()
@@ -204,7 +215,6 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 
 accuL = tk.Label(root, font=("Helvetica", 48))
-#voluS = ttk.Scale(root, variable=val,)
 ButtonF = tk.Frame(root, pady=5, padx=5, bd=0)
 contiB = ttk.Button(ButtonF, text="CONTINUE", style="title.TButton", padding=[10], command=start_game)
 titleB = ttk.Button(ButtonF, text="TITLE", style="title.TButton", padding=[10], command=title)
