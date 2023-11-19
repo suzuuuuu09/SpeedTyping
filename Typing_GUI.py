@@ -1,5 +1,5 @@
 import tkinter as tk
-import sys, random, time, math, keyboard
+import random, time, math
 from tkinter import *
 from tkinter import ttk
 from pydub import AudioSegment
@@ -12,7 +12,7 @@ with open("word.txt", "r") as f:
 
 
 score = 0
-time_limit = 10
+time_limit = 1
 volume_percent = 70
 enter_ct = 0
 cor_ct = 0
@@ -41,7 +41,10 @@ def reset_pos():
     timerL.place_forget()
     seCB.pack_forget()
     backB.pack_forget()
-    accuL.place_forget()
+    accuL.pack_forget()
+    ButtonF.pack_forget()
+    contiB.pack_forget()
+    titleB.pack_forget()
 
 
 #正解効果音
@@ -73,6 +76,22 @@ def setting():
     reset_pos()
     seCB.pack(anchor="w")
     backB.pack(side="bottom", anchor="w")
+
+
+#結果画面
+def result():
+    global score, game_ended, cor_ct, enter_ct
+    try:
+        accu = cor_ct / enter_ct * 100
+    except:
+        accu = 0.0
+    accuL.config(text=str(round(accu, 1)) + "%")
+    reset_pos()
+    accuL.pack()
+    ButtonF.pack(fill="x", side="bottom")
+    contiB.pack(padx=5, pady=5, side="right")
+    titleB.pack(padx=5, pady=5, side="left")
+    game_ended = True
 
 
 #ゲーム開始時カウントダウン
@@ -116,21 +135,6 @@ def next_word():
         words.remove(current_word)
     else:
         result()
-
-
-#結果画面
-def result():
-    global score, game_ended, cor_ct, enter_ct
-    reset_pos()
-    accuL.pack()
-    #titleB.grid(row = 1, column = 1)
-    #contiB.grid(row = 1, column = 3)
-    try:
-        accu = cor_ct / enter_ct * 100
-    except:
-        accu = 0
-    accuL.config(text=str(round(accu, 1)) + "%")
-    game_ended = True
  
 
 def check_word(event):
@@ -201,8 +205,9 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 accuL = tk.Label(root, font=("Helvetica", 48))
 #voluS = ttk.Scale(root, variable=val,)
-contiB = ttk.Button(root, text="CONTINUE", style="title.TButton", padding=[10], command=start_game)
-titleB = ttk.Button(root, text="TITLE", style="title.TButton", padding=[10], command=title)
+ButtonF = tk.Frame(root, pady=5, padx=5, bd=0)
+contiB = ttk.Button(ButtonF, text="CONTINUE", style="title.TButton", padding=[10], command=start_game)
+titleB = ttk.Button(ButtonF, text="TITLE", style="title.TButton", padding=[10], command=title)
 
 
 title()
