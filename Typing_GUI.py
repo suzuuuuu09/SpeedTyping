@@ -12,9 +12,10 @@ with open("word.txt", "r") as f:
 
 
 score = 0
-time_limit = 60
-enter_ct = 0
+time_limit = 10
 volume_percent = 70
+enter_ct = 0
+cor_ct = 0
 start_time = None
 ct = None
 game_ended = False
@@ -48,7 +49,7 @@ def play_hit_se():
     global volume_percent
     if se.get():
         hit_se = AudioSegment.from_wav("sounds/hit.wav")
-        play(hit_se + (20 * math.log10(volume_percent / 100)))
+        play(hit_se + (20 * math.log10((volume_percent + 1) / 100)))
 
 
 #不正解効果音
@@ -56,7 +57,7 @@ def play_miss_se():
     global volume_percent
     if se.get():
         miss_se = AudioSegment.from_wav("sounds/miss.wav")
-        play(miss_se + (20 * math.log10(volume_percent / 100)))
+        play(miss_se + (20 * math.log10((volume_percent + 1) / 100)))
 
 
 #タイトル画面
@@ -72,11 +73,6 @@ def setting():
     reset_pos()
     seCB.pack(anchor="w")
     backB.pack(side="bottom", anchor="w")
-
-
-#結果画面
-def result():
-    reset_pos()
 
 
 #ゲーム開始時カウントダウン
@@ -111,7 +107,7 @@ def start_game():
     start_ct(3)
     startB["state"] = "disabled"
     game_ended = False
-
+    
 
 def next_word():
     if len(words) > 0:
@@ -119,31 +115,39 @@ def next_word():
         wordL.config(text=current_word)
         words.remove(current_word)
     else:
-        end_game()
+        result()
 
 
-def end_game():
-    global score, game_ended
+#結果画面
+def result():
+    global score, game_ended, cor_ct, enter_ct
     reset_pos()
     accuL.pack()
-    accuL.config(text=str(round(score / enter_ct * 100, 1)) + "%")
+    #titleB.grid(row = 1, column = 1)
+    #contiB.grid(row = 1, column = 3)
+    try:
+        accu = cor_ct / enter_ct * 100
+    except:
+        accu = 0
+    accuL.config(text=str(round(accu, 1)) + "%")
     game_ended = True
  
 
 def check_word(event):
-    global score, enter_ct
+    global score, enter_ct, cor_ct, cur_word
     if game_ended:
         return
     user_input = wordE.get()
-    if user_input == wordL.cget("text"):
-        score += 1
+    cur_word = wordL.cget("text")
+    if user_input == cur_word:
+        score += len(cur_word)
+        cor_ct += 1
         enter_ct += 1
-        next_word()
         play_hit_se()
     else:
         enter_ct += 1
-        next_word()
         play_miss_se()
+    next_word()
     scoreL.config(text="Score: " + str(score))
     wordE.delete(0, tk.END)
     
@@ -155,7 +159,7 @@ def countdown():
         remaining_time = max(time_limit - elapsed_time, 0)
         timerL.config(text=f"Time: {int(remaining_time)} ")
         if elapsed_time >= time_limit:
-            end_game()
+            result()
             wordE.unbind("<Return>")
         else:
             root.after(1000, countdown)
@@ -185,7 +189,7 @@ titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 se = BooleanVar(root)
 seCB = ttk.Checkbutton(root, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se)
-backB = ttk.Button(root, text="<Back", style="t.TButton", padding=[10], command=title)
+backB = ttk.Button(root, text="<Back", style="title.TButton", padding=[10], command=title)
 
 
 wordL = tk.Label(root, font=("Helvetica", 48))
@@ -197,8 +201,8 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 accuL = tk.Label(root, font=("Helvetica", 48))
 #voluS = ttk.Scale(root, variable=val,)
-contiB = ttk.Button(root, text="CONTINUE", style="t.TButton", padding=[10], command=start_game)
-titleB = ttk.Button(root, text="TITLE", style="t.TButton", padding=[10], command=title)
+contiB = ttk.Button(root, text="CONTINUE", style="title.TButton", padding=[10], command=start_game)
+titleB = ttk.Button(root, text="TITLE", style="title.TButton", padding=[10], command=title)
 
 
 title()
