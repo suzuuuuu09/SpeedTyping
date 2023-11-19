@@ -1,5 +1,5 @@
 import tkinter as tk
-import random, time, math
+import random, time, math ,keyboard
 from tkinter import *
 from tkinter import ttk
 from pydub import AudioSegment
