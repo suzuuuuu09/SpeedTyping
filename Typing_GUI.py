@@ -7,12 +7,12 @@ from pydub.playback import play
 
 
 #word.txtの読み込み
-with open("word.txt", "r") as f:
+with open("word.txt", "r", encoding="utf-8") as f:
     words = f.read().splitlines()
 
 
 score = 0
-time_limit = 10
+time_limit = 0
 volume_percent = 70
 enter_ct = 0
 cor_ct = 0
@@ -46,6 +46,11 @@ def reset_pos():
     ButtonF.pack_forget()
     contiB.pack_forget()
     titleB.pack_forget()
+    modeF.place_forget()
+    modeL.pack_forget()
+    easyB.pack_forget()
+    normalB.pack_forget()
+    hardB.pack_forget()
 
 
 #正解効果音
@@ -64,6 +69,33 @@ def play_miss_se():
         play(miss_se + (20 * math.log10((volume_percent + 1) / 100)))
 
 
+def easy_mode():
+    global min_value, max_value, time_limit, score
+    max_value = 6
+    min_value = 0
+    time_limit = 60
+    score = 0
+    start_game()
+
+
+def normal_mode():
+    global min_value, max_value, time_limit, score
+    max_value = 10
+    min_value = 5
+    time_limit = 90
+    score = 0
+    start_game()
+
+
+def hard_mode():
+    global min_value, max_value, time_limit, score
+    max_value = 99
+    min_value = 9
+    time_limit = 120
+    score = 0
+    start_game()
+
+
 #タイトル画面
 def title():
     reset_pos()
@@ -75,6 +107,11 @@ def title():
 #モード選択画面
 def mode_select():
     reset_pos()
+    modeF.place(x=w // 2, y=h // 2, anchor="center")
+    modeL.pack(anchor="w")
+    easyB.pack(padx=5, pady=5)
+    normalB.pack(padx=5, pady=5)
+    hardB.pack(padx=5, pady=5)
 
 
 #設定画面
@@ -136,8 +173,9 @@ def start_game():
     
 
 def next_word():
+    global min_value, max_value
     if len(words) > 0:
-        current_word = random.choice([word for word in words if len(word) >= 1 and len(word) <= 2])
+        current_word = random.choice([word for word in words if len(word) >= min_value and len(word) <= max_value])
         wordL.config(text=current_word)
         words.remove(current_word)
     else:
@@ -197,14 +235,21 @@ style.configure("setting.TCheckbutton", font=("Helvetica", 20))
 
 
 #UI
-startB = ttk.Button(root, text="START", style="title.TButton", padding=[10], command=start_game)
-settingB = ttk.Button(root, text="SETTING", style="title.TButton", padding=[10], command=setting)
+startB = ttk.Button(root, text="START", style="title.TButton", padding=[20], command=mode_select)
+settingB = ttk.Button(root, text="SETTING", style="title.TButton", padding=[20], command=setting)
 titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 
 se = BooleanVar(root)
 seCB = ttk.Checkbutton(root, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se)
-backB = ttk.Button(root, text="<Back", style="title.TButton", padding=[10], command=title)
+backB = ttk.Button(root, text="<Back", style="title.TButton", padding=[20], command=title)
+
+
+modeF = tk.Frame(root, pady=5, padx=5, bd=0)
+modeL = tk.Label(root, text="Mode Select", font=("Helvetica", 40))
+easyB = ttk.Button(modeF, text="EASY", style="title.TButton", padding=[20], command=easy_mode)
+normalB = ttk.Button(modeF, text="NORMAL", style="title.TButton", padding=[20], command=normal_mode)
+hardB = ttk.Button(modeF, text="HARD", style="title.TButton", padding=[20], command=hard_mode)
 
 
 wordL = tk.Label(root, font=("Helvetica", 48))
@@ -216,8 +261,8 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 accuL = tk.Label(root, font=("Helvetica", 48))
 ButtonF = tk.Frame(root, pady=5, padx=5, bd=0)
-contiB = ttk.Button(ButtonF, text="CONTINUE", style="title.TButton", padding=[10], command=start_game)
-titleB = ttk.Button(ButtonF, text="TITLE", style="title.TButton", padding=[10], command=title)
+contiB = ttk.Button(ButtonF, text="CONTINUE", style="title.TButton", padding=[20], command=start_game)
+titleB = ttk.Button(ButtonF, text="TITLE", style="title.TButton", padding=[20], command=title)
 
 
 title()
