@@ -4,22 +4,14 @@ from tkinter import *
 from tkinter import ttk
 from pydub import AudioSegment
 from pydub.playback import play
+from ttkthemes import ThemedTk
 
 
-#word.txtの読み込み
-with open("word.txt", "r", encoding="utf-8") as f:
-    words = f.read().splitlines()
-
-
-score = 0
 time_limit = 0
 volume_percent = 70
-enter_ct = 0
-cor_ct = 0
-conti_ct = 0
 start_time = None
 ct = None
-game_ended = False
+game_end = False
 
 
 #windowのサイズと開始位置
@@ -43,7 +35,7 @@ def reset_pos():
     seCB.pack_forget()
     backB.pack_forget()
     accuL.pack_forget()
-    ButtonF.pack_forget()
+    buttonF.pack_forget()
     contiB.pack_forget()
     titleB.pack_forget()
     modeF.place_forget()
@@ -51,6 +43,14 @@ def reset_pos():
     easyB.pack_forget()
     normalB.pack_forget()
     hardB.pack_forget()
+    score_rL.pack_forget()
+    volS.pack_forget()
+
+
+#音量調整
+def volume_control():
+    global volume_percent
+    volume_percent = vol_var.get()
 
 
 #正解効果音
@@ -74,7 +74,6 @@ def easy_mode():
     max_value = 6
     min_value = 0
     time_limit = 60
-    score = 0
     start_game()
 
 
@@ -83,7 +82,6 @@ def normal_mode():
     max_value = 10
     min_value = 5
     time_limit = 90
-    score = 0
     start_game()
 
 
@@ -92,7 +90,6 @@ def hard_mode():
     max_value = 99
     min_value = 9
     time_limit = 120
-    score = 0
     start_game()
 
 
@@ -108,7 +105,7 @@ def title():
 def mode_select():
     reset_pos()
     modeF.place(x=w // 2, y=h // 2, anchor="center")
-    modeL.pack(anchor="w")
+    modeL.pack()
     easyB.pack(padx=5, pady=5)
     normalB.pack(padx=5, pady=5)
     hardB.pack(padx=5, pady=5)
@@ -118,23 +115,26 @@ def mode_select():
 def setting():
     reset_pos()
     seCB.pack(anchor="w")
+    volS.pack(anchor="w")
     backB.pack(side="bottom", anchor="w")
 
 
 #結果画面
 def result():
-    global score, game_ended, cor_ct, enter_ct
+    global score, game_end, cor_ct, enter_ct
     try:
         accu = cor_ct / enter_ct * 100
     except:
         accu = 0.0
-    accuL.config(text=str(round(accu, 1)) + "%")
+    accuL.config(text="Accuracy\n" + str(round(accu, 1)) + "%")
+    score_rL.config(text="score\n" + str(score))
     reset_pos()
     accuL.pack()
-    ButtonF.pack(fill="x", side="bottom")
+    score_rL.pack()
+    buttonF.pack(fill="x", side="bottom")
     contiB.pack(padx=5, pady=5, side="right")
     titleB.pack(padx=5, pady=5, side="left")
-    game_ended = True
+    game_end = True
 
 
 #ゲーム開始時カウントダウン
@@ -164,27 +164,42 @@ def start_ct(sec):
 
 #ゲーム開始時の初期化
 def start_game():
-    global score, game_ended
+    global score, game_end, enter_ct, cor_ct, conti_ct
     score = 0
+    enter_ct = 0
+    cor_ct = 0
+    conti_ct = 0
+    wordE.delete(0, tk.END)
+    if score > 0:
+        score = 0
+        scoreL.config(text="Score: " + str(score))
+    if cor_ct > 0:
+        cor_ct = 0
+    if enter_ct > 0:
+        enter_ct = 0
+    if conti_ct > 0:
+        conti_ct = 0
     wordE.bind("<Return>", check_word)
     start_ct(3)
     startB["state"] = "disabled"
-    game_ended = False
+    game_end = False
     
 
 def next_word():
     global min_value, max_value
-    if len(words) > 0:
-        current_word = random.choice([word for word in words if len(word) >= min_value and len(word) <= max_value])
-        wordL.config(text=current_word)
-        words.remove(current_word)
-    else:
-        result()
+    with open("word.txt", "r", encoding="utf-8") as f:
+        words = f.read().splitlines()
+        if len(words) > 0:
+            current_word = random.choice([word for word in words if len(word) >= min_value and len(word) <= max_value])
+            wordL.config(text=current_word)
+            words.remove(current_word)
+        else:
+            result()
  
 
 def check_word(event):
     global score, enter_ct, cor_ct, cur_word, conti_ct
-    if game_ended:
+    if game_end:
         return
     user_input = wordE.get()
     cur_word = wordL.cget("text")
@@ -219,7 +234,7 @@ def countdown():
 
 
 #ウィンドウ情報
-root = tk.Tk()
+root = ThemedTk()
 root.geometry(display_pos())
 root.update_idletasks()
 root.resizable(0,0)
@@ -229,7 +244,7 @@ root.title("SpeedTyping")
 
 #styleの設定
 style = ttk.Style()
-style.theme_use("clam")
+style.theme_use("breeze")
 style.configure("title.TButton", font=("Helveticai", 20))
 style.configure("setting.TCheckbutton", font=("Helvetica", 20))
 
@@ -242,6 +257,9 @@ titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 se = BooleanVar(root)
 seCB = ttk.Checkbutton(root, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se)
+vol_var = tk.IntVar()
+vol_var.set(volume_percent)
+volS = ttk.Scale(root, from_=0, to=100, variable=vol_var, command=volume_control)
 backB = ttk.Button(root, text="<Back", style="title.TButton", padding=[20], command=title)
 
 
@@ -260,9 +278,10 @@ timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
 
 
 accuL = tk.Label(root, font=("Helvetica", 48))
-ButtonF = tk.Frame(root, pady=5, padx=5, bd=0)
-contiB = ttk.Button(ButtonF, text="CONTINUE", style="title.TButton", padding=[20], command=start_game)
-titleB = ttk.Button(ButtonF, text="TITLE", style="title.TButton", padding=[20], command=title)
+score_rL = tk.Label(root, font=("Helvetica", 48))
+buttonF = tk.Frame(root, pady=5, padx=5, bd=0)
+contiB = ttk.Button(buttonF, text="CONTINUE", style="title.TButton", padding=[20], command=start_game)
+titleB = ttk.Button(buttonF, text="TITLE", style="title.TButton", padding=[20], command=title)
 
 
 title()
