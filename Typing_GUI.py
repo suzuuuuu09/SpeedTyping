@@ -48,32 +48,34 @@ def reset_pos():
 
 
 #音量調整
-def volume_control():
+def volume_control(vol_var):
     global volume_percent
-    volume_percent = vol_var.get()
+    volume_percent = vol_var
 
 
 #正解効果音
 def play_hit_se():
-    global volume_percent
+    global volume_percent, v
     if se.get():
+        v = float(volume_percent)
         hit_se = AudioSegment.from_wav("sounds/hit.wav")
-        play(hit_se + (20 * math.log10((volume_percent + 1) / 100)))
+        play(hit_se + (20 * math.log10((math.ceil(v) + 1) / 100)))
 
 
 #不正解効果音
 def play_miss_se():
-    global volume_percent
+    global volume_percent, v
     if se.get():
+        v = float(volume_percent)
         miss_se = AudioSegment.from_wav("sounds/miss.wav")
-        play(miss_se + (20 * math.log10((volume_percent + 1) / 100)))
+        play(miss_se + (20 * math.log10((math.ceil(v)) + 1) / 100))
 
 
 def easy_mode():
     global min_value, max_value, time_limit, score
     max_value = 6
     min_value = 0
-    time_limit = 60
+    time_limit = 5
     start_game()
 
 
@@ -228,7 +230,6 @@ def countdown():
         timerL.config(text=f"Time: {int(remaining_time)} ")
         if elapsed_time >= time_limit:
             result()
-            wordE.unbind("<Return>")
         else:
             root.after(1000, countdown)
 
