@@ -32,6 +32,7 @@ def reset_pos():
     startB.place_forget()
     settingB.place_forget()
     timerL.place_forget()
+    settingF.pack_forget()
     seCB.pack_forget()
     backB.pack_forget()
     accuL.pack_forget()
@@ -45,6 +46,11 @@ def reset_pos():
     hardB.pack_forget()
     score_rL.pack_forget()
     volS.pack_forget()
+    pracL.pack_forget()
+    time_opF.pack_forget()
+    time_opL.pack_forget()
+    time_opE.pack_forget()
+    back_opB.pack_forget()
 
 
 #音量調整
@@ -72,7 +78,7 @@ def play_miss_se():
 
 
 def easy_mode():
-    global min_value, max_value, time_limit, score
+    global min_value, max_value, time_limit
     max_value = 6
     min_value = 0
     time_limit = 5
@@ -80,19 +86,29 @@ def easy_mode():
 
 
 def normal_mode():
-    global min_value, max_value, time_limit, score
-    max_value = 10
+    global min_value, max_value, time_limit
+    max_value = 12
     min_value = 5
     time_limit = 90
     start_game()
 
 
 def hard_mode():
-    global min_value, max_value, time_limit, score
-    max_value = 99
+    global min_value, max_value, time_limit
+    max_value = 17
     min_value = 9
     time_limit = 120
     start_game()
+
+
+#練習モード設定
+def prac_mode():
+    reset_pos()
+    pracL.pack(padx=5, pady=5)
+    time_opF.pack()
+    time_opL.pack(padx=20, pady=0, side="left")
+    time_opE.pack(padx=20, pady=0, side="right")
+    #back_opB.pack(side="bottom", anchor="w")
 
 
 #タイトル画面
@@ -111,14 +127,21 @@ def mode_select():
     easyB.pack(padx=5, pady=5)
     normalB.pack(padx=5, pady=5)
     hardB.pack(padx=5, pady=5)
+    practiceB.pack(padx=5, pady=5)
+    backB.pack(padx=5, pady=5, side="bottom", anchor="w")
 
 
 #設定画面
 def setting():
     reset_pos()
+    settingF.pack()
     seCB.pack(anchor="w")
     volS.pack(anchor="w")
     backB.pack(side="bottom", anchor="w")
+    if se.get():
+        volS["state"] = "normal"
+    else:
+        volS["state"] = "disabled"
 
 
 #結果画面
@@ -256,19 +279,28 @@ settingB = ttk.Button(root, text="SETTING", style="title.TButton", padding=[20],
 titleL = tk.Label(root, text="SpeedTyping", font=("Helvetica", 80))
 
 
-se = BooleanVar(root)
-seCB = ttk.Checkbutton(root, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se)
+settingF = tk.Frame(root, pady=5, padx=5, bd=0)
+se = BooleanVar(settingF)
+seCB = ttk.Checkbutton(settingF, text="Sound Effect (unstable)", style="setting.TCheckbutton", variable=se, command=setting)
 vol_var = tk.IntVar()
 vol_var.set(volume_percent)
-volS = ttk.Scale(root, from_=0, to=100, variable=vol_var, command=volume_control)
+volS = ttk.Scale(settingF, from_=0, to=100, variable=vol_var, command=volume_control)
 backB = ttk.Button(root, text="<Back", style="title.TButton", padding=[20], command=title)
 
 
 modeF = tk.Frame(root, pady=5, padx=5, bd=0)
 modeL = tk.Label(root, text="Mode Select", font=("Helvetica", 40))
-easyB = ttk.Button(modeF, text="EASY", style="title.TButton", padding=[20], command=easy_mode)
-normalB = ttk.Button(modeF, text="NORMAL", style="title.TButton", padding=[20], command=normal_mode)
-hardB = ttk.Button(modeF, text="HARD", style="title.TButton", padding=[20], command=hard_mode)
+easyB = ttk.Button(modeF, text="EASY", style="title.TButton", padding=[10], command=easy_mode)
+normalB = ttk.Button(modeF, text="NORMAL", style="title.TButton", padding=[10], command=normal_mode)
+hardB = ttk.Button(modeF, text="HARD", style="title.TButton", padding=[10], command=hard_mode)
+practiceB = ttk.Button(modeF, text="PRACTICE", style="title.TButton", padding=[10], command=prac_mode)
+
+
+pracL = tk.Label(root, text="Practice Mode Options", font=("Helvetica", 40))
+time_opF = tk.Frame(root, pady=5, padx=5, bd=0)
+time_opL = tk.Label(time_opF, text="Time:", font=("Helvetica", 20))
+time_opE = ttk.Entry(time_opF, font=("Helvetica", 20), justify="center", width=3)
+back_opB = ttk.Button(root, text="<Back", style="title.TButton", padding=[20], command=title)
 
 
 wordL = tk.Label(root, font=("Helvetica", 48))
