@@ -59,7 +59,7 @@ def play_hit_se():
     if se.get():
         v = float(volume_percent)
         hit_se = AudioSegment.from_wav("sounds/hit.wav")
-        play(hit_se + (20 * math.log10((math.ceil(v) + 1) / 100)))
+        play(hit_se + (20 * math.log10((v + 1) / 100)))
 
 
 #不正解効果音
@@ -68,7 +68,7 @@ def play_miss_se():
     if se.get():
         v = float(volume_percent)
         miss_se = AudioSegment.from_wav("sounds/miss.wav")
-        play(miss_se + (20 * math.log10((math.ceil(v)) + 1) / 100))
+        play(miss_se + (20 * math.log10((v + 1) / 100)))
 
 
 def easy_mode():
