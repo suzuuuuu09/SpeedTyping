@@ -44,6 +44,7 @@ def reset_pos():
     easyB.pack_forget()
     normalB.pack_forget()
     hardB.pack_forget()
+    practiceB.pack_forget()
     score_rL.pack_forget()
     volS.pack_forget()
     pracL.pack_forget()
