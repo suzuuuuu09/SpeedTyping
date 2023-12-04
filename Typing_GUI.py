@@ -109,7 +109,7 @@ def prac_mode():
     time_opF.pack()
     time_opL.pack(padx=20, pady=0, side="left")
     time_opE.pack(padx=20, pady=0, side="right")
-    #back_opB.pack(side="bottom", anchor="w")
+    back_opB.pack(padx=5, pady=5, side="bottom", anchor="w")
 
 
 #タイトル画面
@@ -138,7 +138,7 @@ def setting():
     settingF.pack()
     seCB.pack(anchor="w")
     volS.pack(anchor="w")
-    backB.pack(side="bottom", anchor="w")
+    backB.pack(padx=5, pady=5, side="bottom", anchor="w")
     if se.get():
         volS["state"] = "normal"
     else:
