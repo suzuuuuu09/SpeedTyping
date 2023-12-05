@@ -52,6 +52,7 @@ def reset_pos():
     time_opL.pack_forget()
     time_opE.pack_forget()
     back_opB.pack_forget()
+    markL.pack_forget()
 
 
 #音量調整
@@ -82,7 +83,7 @@ def easy_mode():
     global min_value, max_value, time_limit
     max_value = 6
     min_value = 0
-    time_limit = 5
+    time_limit = 60
     start_game()
 
 
@@ -235,12 +236,15 @@ def check_word(event):
         enter_ct += 1
         conti_ct += 1
         play_hit_se()
+        scoreL.config(text="Score: " + str(score))
+        markL.config(text="〇", fg="#ff0000")
     else:
         enter_ct += 1
         conti_ct = 0
         play_miss_se()
+        markL.config(text="×", fg="#000088")
+    markL.pack(side="bottom", pady=50)
     next_word()
-    scoreL.config(text="Score: " + str(score))
     wordE.delete(0, tk.END)
     
 
@@ -309,6 +313,7 @@ countL = tk.Label(root, font=("Helvetica", 54))
 wordE = ttk.Entry(root, font=("Helvetica", 24), state="disabled", justify="center")
 scoreL = tk.Label(root, text="Score: 0", font=("Helvetica", 18))
 timerL = tk.Label(root, text=f"Time: {time_limit} ", font=("Helvetica", 18))
+markL = tk.Label(root, font=("Helvetica", 60))
 
 
 accuL = tk.Label(root, font=("Helvetica", 48))
